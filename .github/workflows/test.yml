@@ -1,0 +1,27 @@
+# CI: 每次 push / PR 自动跑全部 193 项测试
+# README 顶上加徽章（把 <USER>/<REPO> 换成你的）：
+#   [![tests](https://github.com/<USER>/<REPO>/actions/workflows/test.yml/badge.svg)](https://github.com/<USER>/<REPO>/actions/workflows/test.yml)
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install deps
+        run: pip install numpy matplotlib pytest
+      - name: Run test suite
+        run: python3 -m pytest tests/ -v
+
+# 基线：193 passed, 0 xfail（V1.1 清零了全部登记簿条目，2026-10-03）
+# test_known_bugs.py 已转正为回归测试：今后新 bug 仍走 登记→修复→xpass 提醒→转正。
+# V2 若新增依赖（scipy 等），在 Install deps 一行追加即可。
